@@ -32,7 +32,7 @@ Entorno: Windows/amd64, Go 1.26.10, 12 CPU lógicas, GOMAXPROCS=4, 4 workers, lo
 | Limpieza de datos sintéticos | Cumplido | 8,523 filas descartadas (3.03%); 2,861 reparadas (1.02%) |
 | Detector de carreras | Cumplido en esta ejecución | race: salida 0 y stderr vacío; sin WARNING: DATA RACE |
 | Formato y análisis estático | Cumplido | go fmt main.go y go vet main.go: salida 0 |
-| GitHub, Git Flow, PR y Kanban | Evidencia parcial | El repositorio ya está inicializado y tiene un commit inicial. Queda documentar las ramas, revisiones y el tablero Kanban con evidencia real. |
+| GitHub, Git Flow, PR y Kanban | Evidencia parcial | El repositorio está publicado y el [tablero Kanban](https://github.com/users/magic-tps/projects/2) contiene diez tareas. Queda incorporar capturas reales al informe y documentar las ramas y revisiones. |
 
 La revisión integral unificó las tablas y conclusiones del informe con estas nuevas corridas. Las mediciones históricas se conservan por separado en output.txt y en las capturas JPEG originales: los tiempos no deben mezclarse. Los tiempos de la ejecución instrumentada con -race no representan rendimiento nativo.
 

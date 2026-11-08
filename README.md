@@ -33,6 +33,17 @@ go run main.go -workers=4 -v=false -reps=1
 Las franjas horarias son simuladas porque el CSV no contiene la hora del hecho.
 Los resultados describen un prototipo local; no validan su uso operativo.
 
+## Kanban
+
+El [tablero Kanban PC03](https://github.com/users/magic-tps/projects/2) está
+vinculado a este repositorio y organiza las tareas en **Por hacer**,
+**En progreso** y **Terminado**. Cada tarjeta corresponde a una issue con su
+descripción, evidencia o pasos pendientes.
+
+Al comenzar una tarea, mover su tarjeta a **En progreso**. Al verificar el
+resultado, moverla a **Terminado** y cerrar la issue. Los responsables se asignan
+de acuerdo con el equipo. La captura del tablero para el informe sigue pendiente.
+
 ## Actualizar el repositorio
 
 Después de guardar los cambios, ejecutar desde esta carpeta:
