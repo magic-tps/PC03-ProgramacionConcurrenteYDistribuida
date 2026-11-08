@@ -1,6 +1,6 @@
 # Nuevas capturas PC3 — 8 de noviembre de 2026
 
-15 capturas de los registros reales de nuevas ejecuciones. Se insertaron en los espacios 3–11 del informe Word existente. Los espacios 1, 2, 12, 13 y 14 se marcaron pendientes de evidencia real de GitHub. El informe recibió después una revisión integral; su detalle está en REVISION_INFORME_PC3.md, en la carpeta principal.
+15 capturas de los registros reales de nuevas ejecuciones. Se insertaron en los espacios 3–11 del informe Word existente. Los espacios 1, 2, 12, 13 y 14 se marcaron pendientes de evidencia real de GitHub. El informe recibió después una revisión integral.
 
 Cada PNG muestra una vista del registro guardado: no es una foto de la terminal. El contenido del programa se conserva sin alterar sus valores. Las tablas largas se dividieron para facilitar la lectura. Las franjas horarias del prototipo son simuladas.
 
@@ -32,7 +32,7 @@ Entorno: Windows/amd64, Go 1.26.10, 12 CPU lógicas, GOMAXPROCS=4, 4 workers, lo
 | Limpieza de datos sintéticos | Cumplido | 8,523 filas descartadas (3.03%); 2,861 reparadas (1.02%) |
 | Detector de carreras | Cumplido en esta ejecución | race: salida 0 y stderr vacío; sin WARNING: DATA RACE |
 | Formato y análisis estático | Cumplido | go fmt main.go y go vet main.go: salida 0 |
-| GitHub, Git Flow, PR y Kanban | Pendiente de evidencia | La carpeta no contiene .git y la búsqueda de repositorios conectados no identificó el proyecto |
+| GitHub, Git Flow, PR y Kanban | Evidencia parcial | El repositorio ya está inicializado y tiene un commit inicial. Queda documentar las ramas, revisiones y el tablero Kanban con evidencia real. |
 
 La revisión integral unificó las tablas y conclusiones del informe con estas nuevas corridas. Las mediciones históricas se conservan por separado en output.txt y en las capturas JPEG originales: los tiempos no deben mezclarse. Los tiempos de la ejecución instrumentada con -race no representan rendimiento nativo.
 

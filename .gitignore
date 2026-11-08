@@ -1,0 +1,21 @@
+# Archivos temporales de Microsoft Office
+~$*
+*.tmp
+
+# Ejecutables y resultados de compilación de Go
+/main
+/main.exe
+*.test
+*.test.exe
+
+# Dataset sintético generado por el programa
+/DATASET_Denuncias_Policiales_SINTETICO.csv
+
+# Caché de Python
+__pycache__/
+*.pyc
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+Desktop.ini
