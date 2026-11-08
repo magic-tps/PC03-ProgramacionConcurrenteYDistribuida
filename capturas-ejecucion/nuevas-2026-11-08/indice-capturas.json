@@ -1,0 +1,152 @@
+[
+  {
+    "imagen": "07-entorno-fuente.png",
+    "registro": "normal.stdout.txt",
+    "lineas": [
+      3,
+      18
+    ],
+    "titulo": "Entorno y fuente de datos",
+    "codigo_salida": 0
+  },
+  {
+    "imagen": "03-lectura-limpieza.png",
+    "registro": "normal.stdout.txt",
+    "lineas": [
+      19,
+      46
+    ],
+    "titulo": "Lectura, limpieza y desagregación",
+    "codigo_salida": 0
+  },
+  {
+    "imagen": "05a-distribucion-clases.png",
+    "registro": "normal.stdout.txt",
+    "lineas": [
+      50,
+      76
+    ],
+    "titulo": "Distribución nacional y clases del clasificador",
+    "codigo_salida": 0
+  },
+  {
+    "imagen": "05b-distritos-zonas.png",
+    "registro": "normal.stdout.txt",
+    "lineas": [
+      77,
+      104
+    ],
+    "titulo": "Distritos y zonas urbanas",
+    "codigo_salida": 0
+  },
+  {
+    "imagen": "05c-franjas-simuladas.png",
+    "registro": "normal.stdout.txt",
+    "lineas": [
+      105,
+      127
+    ],
+    "titulo": "Franjas horarias imputadas (simuladas)",
+    "codigo_salida": 0
+  },
+  {
+    "imagen": "06a-random-forest.png",
+    "registro": "normal.stdout.txt",
+    "lineas": [
+      128,
+      147
+    ],
+    "titulo": "Random Forest: entrenamiento y evaluación",
+    "codigo_salida": 0
+  },
+  {
+    "imagen": "06b-importancia-variables.png",
+    "registro": "normal.stdout.txt",
+    "lineas": [
+      148,
+      158
+    ],
+    "titulo": "Importancia de variables",
+    "codigo_salida": 0
+  },
+  {
+    "imagen": "06c-predicciones.png",
+    "registro": "normal.stdout.txt",
+    "lineas": [
+      159,
+      176
+    ],
+    "titulo": "Predicciones del prototipo local",
+    "codigo_salida": 0
+  },
+  {
+    "imagen": "08a-workers-monitor.png",
+    "registro": "replica.stdout.txt",
+    "lineas": [
+      14,
+      33
+    ],
+    "titulo": "Worker Pool y monitor: inicio de la ejecución",
+    "codigo_salida": 0
+  },
+  {
+    "imagen": "08b-workers-reparto.png",
+    "registro": "replica.stdout.txt",
+    "lineas": [
+      51,
+      64
+    ],
+    "titulo": "Worker Pool: cierre y reparto de los 38 lotes",
+    "codigo_salida": 0
+  },
+  {
+    "imagen": "09-benchmark-corrida1.png",
+    "registro": "normal.stdout.txt",
+    "lineas": [
+      177,
+      201
+    ],
+    "titulo": "Benchmark: corrida 1",
+    "codigo_salida": 0
+  },
+  {
+    "imagen": "10-benchmark-corrida2.png",
+    "registro": "replica.stdout.txt",
+    "lineas": [
+      223,
+      247
+    ],
+    "titulo": "Benchmark: corrida 2",
+    "codigo_salida": 0
+  },
+  {
+    "imagen": "04a-sintetico-generacion.png",
+    "registro": "sintetico.stdout.txt",
+    "lineas": [
+      8,
+      15
+    ],
+    "titulo": "Generación del dataset sintético de prueba",
+    "codigo_salida": 0
+  },
+  {
+    "imagen": "04b-sintetico-limpieza.png",
+    "registro": "sintetico.stdout.txt",
+    "lineas": [
+      21,
+      49
+    ],
+    "titulo": "Prueba de limpieza con ruido sintético",
+    "codigo_salida": 0
+  },
+  {
+    "imagen": "11-detector-carreras.png",
+    "registro": "race.stdout.txt",
+    "lineas": [
+      177,
+      201
+    ],
+    "titulo": "Ejecución con detector de carreras",
+    "codigo_salida": 0
+  }
+]

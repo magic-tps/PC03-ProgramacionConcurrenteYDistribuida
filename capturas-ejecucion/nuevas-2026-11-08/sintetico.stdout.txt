@@ -1,0 +1,214 @@
+
+╔════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║ CC65 · PC3 · CASO 2 — Clasificación de Delitos Urbanos (SIDPOL-MININTER/PNP) · Go go1.26.10            ║
+╚════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+  CPU lógicas: 12 │ GOMAXPROCS: 4 │ Workers (N): 4 │ Lote: 10,000 filas │ Búfer FIFO: 16 lotes │ Alcance: LIMA │ Parseo CSV: lector
+
+╔════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║ FASE 0 · Fuente de datos                                                                               ║
+╚════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+  ⚠ No se encontró el CSV oficial. Generando dataset SINTÉTICO con el mismo formato…
+  ✔ Generado DATASET_Denuncias_Policiales_SINTETICO.csv │ 281,473 filas agregadas │ Σ cantidad = 7,512,090 │ 250.9 ms (bufio.Writer)
+  Archivo: DATASET_Denuncias_Policiales_SINTETICO.csv
+  Tipo   : SINTÉTICO (fallback, mismo formato) │ Tamaño: 22.96 MB
+
+╔════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║ FASE 1 · Pipeline concurrente: Lector → Cola FIFO → Pool de 4 workers → Recolector                     ║
+╚════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+  Lector (bufio 1 MiB + encoding/csv) agrupa lotes; los workers limpian, normalizan, filtran y DESAGREGAN.
+
+
+  ▸ Métricas de lectura y limpieza
+  ┌────────────────────────────────────────────────────────────┬────────────────┬────────────┐
+  │ Concepto                                                   │          Valor │          % │
+  ├────────────────────────────────────────────────────────────┼────────────────┼────────────┤
+  │ Filas leídas del CSV (sin cabecera)                        │        281,473 │    100.00% │
+  │ Filas con formato válido                                   │        272,950 │     96.97% │
+  │   · reparadas al normalizar (formato desordenado)          │          2,861 │      1.02% │
+  │ Filas DESCARTADAS por ruido / formato inválido             │          8,523 │      3.03% │
+  ├────────────────────────────────────────────────────────────┼────────────────┼────────────┤
+  │ Σ cantidad nacional detectada (denuncias policiales)       │      7,288,099 │            │
+  │ Filas fuera del alcance geográfico (lima)                  │        241,412 │     85.77% │
+  │ Filas no clasificables en alcance (modalidad "Otros")      │          5,065 │      1.80% │
+  │ Filas VÁLIDAS para el clasificador                         │         26,473 │      9.41% │
+  ├────────────────────────────────────────────────────────────┼────────────────┼────────────┤
+  │ Denuncias en alcance excluidas por "Otros"                 │        918,023 │            │
+  │ REGISTROS INDIVIDUALES DESAGREGADOS (1 fila = 1 denuncia)  │      1,922,142 │     26.37% │
+  └────────────────────────────────────────────────────────────┴────────────────┴────────────┘
+
+  ▸ Detalle del ruido eliminado
+  ┌────────────────────────────────────────────────────────────┬────────────────┬─────────────┐
+  │ Motivo de descarte                                         │          Filas │ % del ruido │
+  ├────────────────────────────────────────────────────────────┼────────────────┼─────────────┤
+  │ Nº de columnas incorrecto (fila truncada)                  │          1,802 │      21.14% │
+  │ Campo obligatorio vacío                                    │          1,442 │      16.92% │
+  │ Año/mes fuera de rango o no numérico                       │          1,364 │      16.00% │
+  │ UBIGEO inválido                                            │          1,452 │      17.04% │
+  │ Cantidad no numérica, <= 0 o atípica                       │          2,463 │      28.90% │
+  └────────────────────────────────────────────────────────────┴────────────────┴─────────────┘
+
+  ▸ Tiempos de la Fase 1
+  ┌────────────────────────────────────────────────────────────┬────────────────┬────────────────────────┐
+  │ Etapa                                                      │         Tiempo │             Throughput │
+  ├────────────────────────────────────────────────────────────┼────────────────┼────────────────────────┤
+  │ Lector (disco → lotes; incluye espera por backpressure)    │       454.3 ms │          281,473 filas │
+  │ Pipeline completo (29 lotes, 4 workers, fusión incluida)   │       528.4 ms │        532,653 filas/s │
+  │ Generación de denuncias individuales                       │                │        3,637,417 reg/s │
+  └────────────────────────────────────────────────────────────┴────────────────┴────────────────────────┘
+
+╔════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║ FASE 2 · Análisis criminológico (Map-Reduce concurrente sobre los registros desagregados)              ║
+╚════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+
+  ▸ Distribución NACIONAL por modalidad (Σ cantidad, todas las filas con formato válido)
+  ┌────────────────────────────┬──────────────┬──────────┬────────────────────────────────┐
+  │ Modalidad                  │    Denuncias │        % │                                │
+  ├────────────────────────────┼──────────────┼──────────┼────────────────────────────────┤
+  │ Violencia mujer/IGF        │    2,117,370 │   29.05% │ █████████░░░░░░░░░░░░░░░░░░░░░ │
+  │ Hurto                      │    1,449,047 │   19.88% │ ██████░░░░░░░░░░░░░░░░░░░░░░░░ │
+  │ Robo                       │      697,862 │    9.58% │ ███░░░░░░░░░░░░░░░░░░░░░░░░░░░ │
+  │ Estafa                     │      218,064 │    2.99% │ █░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ │
+  │ Extorsión                  │      113,613 │    1.56% │ ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ │
+  │ Secuestro                  │        9,634 │    0.13% │ ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ │
+  │ Otros (no clasificable)    │    2,682,509 │   36.81% │ ███████████░░░░░░░░░░░░░░░░░░░ │
+  ├────────────────────────────┼──────────────┼──────────┼────────────────────────────────┤
+  │ TOTAL                      │    7,288,099 │  100.00% │                                │
+  └────────────────────────────┴──────────────┴──────────┴────────────────────────────────┘
+
+  ▸ Clases del clasificador — 1,922,142 denuncias desagregadas (LIMA)
+  ┌────────────────────────────┬──────────────┬──────────┬────────────────────────────────┐
+  │ Delito (clase)             │    Registros │        % │                                │
+  ├────────────────────────────┼──────────────┼──────────┼────────────────────────────────┤
+  │ Violencia mujer/IGF        │      769,539 │   40.04% │ ████████████░░░░░░░░░░░░░░░░░░ │
+  │ Hurto                      │      627,619 │   32.65% │ ██████████░░░░░░░░░░░░░░░░░░░░ │
+  │ Robo                       │      373,918 │   19.45% │ ██████░░░░░░░░░░░░░░░░░░░░░░░░ │
+  │ Estafa                     │       97,870 │    5.09% │ ██░░░░░░░░░░░░░░░░░░░░░░░░░░░░ │
+  │ Extorsión                  │       49,290 │    2.56% │ █░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ │
+  │ Secuestro                  │        3,906 │    0.20% │ ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ │
+  └────────────────────────────┴──────────────┴──────────┴────────────────────────────────┘
+
+  ▸ Top 10 distritos por volumen de denuncias
+  ┌────┬──────────────────────────┬──────────────┬────────────┬─────────┬──────────────────────────────┬───────────┐
+  │  # │ Distrito                 │ Zona         │  Denuncias │       % │ Delito predominante          │  % calle* │
+  ├────┼──────────────────────────┼──────────────┼────────────┼─────────┼──────────────────────────────┼───────────┤
+  │  1 │ SAN JUAN DE LURIGANCHO   │ LIMA ESTE    │    172,035 │   8.95% │ Violencia mujer/IGF (39.98%) │    54.95% │
+  │  2 │ LIMA                     │ LIMA CENTRO  │    168,837 │   8.78% │ Violencia mujer/IGF (40.46%) │    54.29% │
+  │  3 │ CALLAO                   │ CALLAO       │    121,138 │   6.30% │ Violencia mujer/IGF (40.00%) │    55.08% │
+  │  4 │ COMAS                    │ LIMA NORTE   │     97,001 │   5.05% │ Violencia mujer/IGF (39.44%) │    55.40% │
+  │  5 │ SAN MARTIN DE PORRES     │ LIMA NORTE   │     89,393 │   4.65% │ Violencia mujer/IGF (39.73%) │    55.03% │
+  │  6 │ ATE                      │ LIMA ESTE    │     88,127 │   4.58% │ Violencia mujer/IGF (40.56%) │    54.34% │
+  │  7 │ VILLA MARIA DEL TRIUNFO  │ LIMA SUR     │     78,979 │   4.11% │ Violencia mujer/IGF (40.49%) │    54.67% │
+  │  8 │ LOS OLIVOS               │ LIMA NORTE   │     78,213 │   4.07% │ Violencia mujer/IGF (39.52%) │    55.26% │
+  │  9 │ SANTIAGO DE SURCO        │ LIMA CENTRO  │     74,323 │   3.87% │ Violencia mujer/IGF (40.63%) │    54.63% │
+  │ 10 │ VILLA EL SALVADOR        │ LIMA SUR     │     64,668 │   3.36% │ Violencia mujer/IGF (40.65%) │    54.18% │
+  └────┴──────────────────────────┴──────────────┴────────────┴─────────┴──────────────────────────────┴───────────┘
+    * % calle = Hurto + Robo + Extorsión + Secuestro (delitos disuadibles con patrullaje).
+
+  ▸ Distribución por zona urbana
+  ┌────────────────────────┬──────────────┬──────────┬────────────────────────────────┐
+  │ Zona                   │    Denuncias │        % │                                │
+  ├────────────────────────┼──────────────┼──────────┼────────────────────────────────┤
+  │ LIMA CENTRO            │      584,917 │   30.43% │ █████████░░░░░░░░░░░░░░░░░░░░░ │
+  │ LIMA NORTE             │      439,785 │   22.88% │ ███████░░░░░░░░░░░░░░░░░░░░░░░ │
+  │ LIMA ESTE              │      411,515 │   21.41% │ ██████░░░░░░░░░░░░░░░░░░░░░░░░ │
+  │ LIMA SUR               │      299,172 │   15.56% │ █████░░░░░░░░░░░░░░░░░░░░░░░░░ │
+  │ CALLAO                 │      186,753 │    9.72% │ ███░░░░░░░░░░░░░░░░░░░░░░░░░░░ │
+  └────────────────────────┴──────────────┴──────────┴────────────────────────────────┘
+
+  ▸ Distribución por franja horaria (variable DERIVADA — ver supuesto en el código)
+  ┌──────────────────┬─────────────┬─────────┬──────────────────────────┬─────────────────────┬─────────────┐
+  │ Franja           │   Denuncias │       % │                          │ Predominante        │    De calle │
+  ├──────────────────┼─────────────┼─────────┼──────────────────────────┼─────────────────────┼─────────────┤
+  │ Madrugada 00-06  │     301,909 │  15.71% │ ████░░░░░░░░░░░░░░░░░░░░ │ Violencia mujer/IGF │     144,334 │
+  │ Mañana 06-12     │     462,426 │  24.06% │ ██████░░░░░░░░░░░░░░░░░░ │ Hurto               │     286,494 │
+  │ Tarde 12-18      │     566,407 │  29.47% │ ███████░░░░░░░░░░░░░░░░░ │ Hurto               │     350,429 │
+  │ Noche 18-24      │     591,400 │  30.77% │ ███████░░░░░░░░░░░░░░░░░ │ Violencia mujer/IGF │     273,476 │
+  └──────────────────┴─────────────┴─────────┴──────────────────────────┴─────────────────────┴─────────────┘
+
+  ▸ Perfil horario por delito: P(franja | delito)
+  ┌──────────────────────┬────────────┬────────────┬────────────┬────────────┐
+  │ Delito               │  Madrugada │     Mañana │      Tarde │      Noche │
+  ├──────────────────────┼────────────┼────────────┼────────────┼────────────┤
+  │ Violencia mujer/IGF  │     19.97% │     17.02% │     22.98% │     40.03% │
+  │ Hurto                │      8.01% │     32.09% │     37.94% │     21.96% │
+  │ Robo                 │     23.88% │     17.00% │     25.05% │     34.07% │
+  │ Estafa               │      4.01% │     45.93% │     39.97% │     10.08% │
+  │ Extorsión            │      7.20% │     42.65% │     36.39% │     13.77% │
+  │ Secuestro            │     31.80% │     12.90% │     17.59% │     37.71% │
+  └──────────────────────┴────────────┴────────────┴────────────┴────────────┘
+
+╔════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║ FASE 3 · Random Forest distribuido (prototipo local: Bagging + Data Parallelism)                       ║
+╚════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+  Matriz de features construida en 48.9 ms │ Features: Distrito (UBIGEO), Zona urbana, Franja horaria, Mes, Año
+  Split temporal │ Train: 1,756,590 registros (años < 2026) │ Test: 165,552 registros (año 2026)
+  Bosque │ 32 árboles │ profundidad máx 12 │ min/hoja 50 │ mtry 3 de 5 │ bootstrap 526,977 registros/árbol (30% del train)
+  ✔ Entrenamiento con 4 workers: 5.578 s
+
+  ▸ Evaluación sobre 165,552 denuncias de 2026 (predicción paralela en 432.2 ms)
+  ┌──────────────────────┬────────────┬────────────┬────────────┬────────────┬────────┐
+  │ Clase                │     Reales │  Predichas │  Precisión │     Recall │     F1 │
+  ├──────────────────────┼────────────┼────────────┼────────────┼────────────┼────────┤
+  │ Violencia mujer/IGF  │     65,898 │     78,637 │      50.9% │      60.7% │  0.554 │
+  │ Hurto                │     54,497 │     86,610 │      42.9% │      68.2% │  0.527 │
+  │ Robo                 │     32,212 │        305 │      25.9% │       0.2% │  0.005 │
+  │ Estafa               │      8,419 │          0 │       0.0% │       0.0% │  0.000 │
+  │ Extorsión            │      4,223 │          0 │       0.0% │       0.0% │  0.000 │
+  │ Secuestro            │        303 │          0 │       0.0% │       0.0% │  0.000 │
+  └──────────────────────┴────────────┴────────────┴────────────┴────────────┴────────┘
+    Exactitud (accuracy) RF: 46.68%  │  Línea base (siempre "Violencia mujer/IGF"): 39.81%  │  Mejora: 6.87 p.p.  │  Recall macro: 21.53%
+
+  ▸ Importancia de variables (reducción media de impureza Gini)
+  ┌──────────────────────┬──────────┬────────────────────────────────┐
+  │ Feature              │  Import. │                                │
+  ├──────────────────────┼──────────┼────────────────────────────────┤
+  │ Distrito (UBIGEO)    │    7.62% │ ██░░░░░░░░░░░░░░░░░░░░░░░░░░░░ │
+  │ Zona urbana          │    1.68% │ █░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ │
+  │ Franja horaria       │   78.43% │ ████████████████████████░░░░░░ │
+  │ Mes                  │    6.28% │ ██░░░░░░░░░░░░░░░░░░░░░░░░░░░░ │
+  │ Año                  │    5.99% │ ██░░░░░░░░░░░░░░░░░░░░░░░░░░░░ │
+  └──────────────────────┴──────────┴────────────────────────────────┘
+
+  ▸ Plan de patrullaje preventivo — predicción RF para 10/2026 (delito de calle más probable por franja)
+  ┌────┬────────────────────────┬────────────────┬────────────────┬────────────────┬────────────────┬─────────────┐
+  │  # │ Distrito               │ Madrugada      │ Mañana         │ Tarde          │ Noche          │ Hist. calle │
+  ├────┼────────────────────────┼────────────────┼────────────────┼────────────────┼────────────────┼─────────────┤
+  │  1 │ SAN JUAN DE LURIGANCHO │ Robo 30%       │ Hurto 44%      │ Hurto 45% ★    │ Hurto 26%      │      94,538 │
+  │  2 │ LIMA                   │ Robo 33%       │ Hurto 45%      │ Hurto 44% ★    │ Hurto 28%      │      91,661 │
+  │  3 │ CALLAO                 │ Robo 31%       │ Hurto 47%      │ Hurto 45% ★    │ Hurto 23%      │      66,717 │
+  │  4 │ COMAS                  │ Robo 28%       │ Hurto 44%      │ Hurto 43% ★    │ Hurto 22%      │      53,736 │
+  │  5 │ SAN MARTIN DE PORRES   │ Robo 22%       │ Hurto 48%      │ Hurto 45% ★    │ Hurto 28%      │      49,189 │
+  │  6 │ ATE                    │ Robo 28%       │ Hurto 47%      │ Hurto 44% ★    │ Hurto 25%      │      47,885 │
+  │  7 │ LOS OLIVOS             │ Robo 30%       │ Hurto 45%      │ Hurto 41% ★    │ Robo 23%       │      43,224 │
+  │  8 │ VILLA MARIA DEL TRIUN… │ Robo 27%       │ Hurto 45%      │ Hurto 42% ★    │ Hurto 24%      │      43,177 │
+  │  9 │ SANTIAGO DE SURCO      │ Robo 28%       │ Hurto 44%      │ Hurto 42% ★    │ Hurto 23%      │      40,599 │
+  │ 10 │ VILLA EL SALVADOR      │ Robo 36%       │ Hurto 40%      │ Hurto 39% ★    │ Robo 23%       │      35,036 │
+  └────┴────────────────────────┴────────────────┴────────────────┴────────────────┴────────────────┴─────────────┘
+    Celda = delito de calle con mayor P_RF(delito | distrito, zona, franja, mes, año).  ★ = franja con más delitos de calle (histórico).
+
+╔════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║ FASE 4 · Razonamiento cuantitativo — Benchmark 1 worker (secuencial) vs 4 workers (mejor de 1 corridas)║
+╚════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+  Ejecutando… (logs silenciados durante las mediciones)
+  ┌────────────────────────────────────────┬─────────────┬────────────┬────────────┬─────────┬────────┬────────────────┬────────────────┬───┐
+  │ Etapa                                  │   Registros │     T(1 W) │     T(4 W) │ Speedup │  Efic. │      Reg/s 1 W │      Reg/s 4 W │ = │
+  ├────────────────────────────────────────┼─────────────┼────────────┼────────────┼─────────┼────────┼────────────────┼────────────────┼───┤
+  │ Ingesta · parseo CSV en lector         │   1,922,142 │    1.125 s │   455.3 ms │   2.47x │  61.8% │      1,708,355 │      4,221,975 │ ✔ │
+  │ Ingesta · parseo CSV en workers        │   1,922,142 │    1.230 s │   442.2 ms │   2.78x │  69.5% │      1,562,968 │      4,346,441 │ ✔ │
+  │ Conteo P(delito | distrito, franja)    │   1,922,142 │     5.8 ms │     2.3 ms │   2.56x │  64.1% │    332,426,980 │    852,271,699 │ ✔ │
+  │ Entrenamiento RF (32 árboles)          │  16,863,264 │   16.212 s │    4.195 s │   3.87x │  96.6% │      1,040,141 │      4,020,233 │ ✔ │
+  └────────────────────────────────────────┴─────────────┴────────────┴────────────┴─────────┴────────┴────────────────┴────────────────┴───┘
+    Ingesta = lectura + parseo + limpieza + desagregación + fusión.  Speedup S = T(1)/T(N) │ Eficiencia E = S/N
+    "=" ✔: el resultado con N workers es idéntico al secuencial (mismas denuncias, mismos conteos, mismo bosque).
+
+    Karp-Flatt · Ingesta · parseo CSV en lector       → fracción serial e =  20.6% │ Speedup máx. (Amdahl, N→∞) ≈ 4.9x
+    Karp-Flatt · Ingesta · parseo CSV en workers      → fracción serial e =  14.6% │ Speedup máx. (Amdahl, N→∞) ≈ 6.8x
+    Karp-Flatt · Conteo P(delito | distrito, franja)  → fracción serial e =  18.7% │ Speedup máx. (Amdahl, N→∞) ≈ 5.4x
+    Karp-Flatt · Entrenamiento RF (32 árboles)        → fracción serial e =   1.2% │ Speedup máx. (Amdahl, N→∞) ≈ 85.9x
+
+╔════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║ RESUMEN                                                                                                ║
+╚════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+  Filas CSV leídas: 281,473 │ Denuncias nacionales: 7,288,099 │ Registros desagregados procesados: 1,922,142
+  Ruido eliminado: 8,523 filas (3.03%) │ RF: exactitud 46.68% vs línea base 39.81% │ Tiempo total del programa: 30.965 s
+

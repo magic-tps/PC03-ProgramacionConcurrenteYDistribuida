@@ -1,0 +1,73 @@
+{
+  "archivo": "DATASET_Denuncias Policiales - Enero 2018 a Septiembre 2026.csv",
+  "cabecera": [
+    "ANIO",
+    "MES",
+    "DPTO_HECHO_NEW",
+    "PROV_HECHO",
+    "DIST_HECHO",
+    "UBIGEO_HECHO",
+    "P_MODALIDADES",
+    "cantidad"
+  ],
+  "filas": 376715,
+  "nacional": 7509690,
+  "anual": {
+    "2018": 774834,
+    "2019": 854940,
+    "2020": 649230,
+    "2021": 754707,
+    "2022": 877842,
+    "2023": 1045014,
+    "2024": 1014638,
+    "2025": 896236,
+    "2026": 642249
+  },
+  "lima_callao_anual": {
+    "2018": 331427,
+    "2019": 336339,
+    "2020": 235434,
+    "2021": 272120,
+    "2022": 327065,
+    "2023": 415020,
+    "2024": 403363,
+    "2025": 354937,
+    "2026": 255016
+  },
+  "modalidades": {
+    "Otros": 2750819,
+    "Violencia contra la mujer e integrantes": 2185182,
+    "Estafa": 225757,
+    "Hurto": 1499117,
+    "Robo": 721903,
+    "Extorsión": 116708,
+    "Secuestro": 10204
+  },
+  "clases_en_alcance": {
+    "Estafa": 100442,
+    "Hurto": 647973,
+    "Robo": 387224,
+    "Violencia contra la mujer e integrantes": 797215,
+    "Extorsión": 50677,
+    "Secuestro": 4025
+  },
+  "ubigeos": 1839,
+  "departamentos": 26,
+  "meses": 105,
+  "cantidad_min": 1,
+  "cantidad_max": 1303,
+  "filas_fuera_alcance": 345657,
+  "filas_en_alcance": 31058,
+  "filas_otros_en_alcance": 5209,
+  "filas_clasificables": 25849,
+  "registros_clasificables": 1987556,
+  "distritos_clasificables": 50,
+  "top10_total": 1076324,
+  "top10_calle": 590270,
+  "total_calle": 1089899,
+  "extorsion_2018": 3072,
+  "extorsion_2025": 26741,
+  "estafa_2018": 9575,
+  "estafa_2024": 40322,
+  "sha256": "e67a1edcd84483df5c471f0d6b9e13c2eeaa34c680af30eb1ec86c443d02ec76"
+}

@@ -1,0 +1,16 @@
+{
+  "nombre": "normal",
+  "inicio_lima": "2026-11-08T14:04:53-05:00",
+  "fin_lima": "2026-11-08T14:05:21-05:00",
+  "comando": "C:\\Users\\magic\\AppData\\Local\\Temp\\pc3-capturas-tools\\go\\bin\\go.exe run main.go -workers=4 -v=false -reps=1",
+  "directorio": "D:\\Escritorio\\PC3-20261108T183927Z-1-001\\PC3",
+  "entorno": {
+    "GOMAXPROCS": "4",
+    "CGO_ENABLED": "1",
+    "CC": "C:\\Users\\magic\\AppData\\Local\\Temp\\pc3-capturas-tools\\w64devkit\\bin\\gcc.exe"
+  },
+  "exit_code": 0,
+  "duracion_proceso_s": 27.911,
+  "sha256_main": "d56c8457cebe599efce6a1ef3b39f3c64da145e6f761352d98c159ec5782810b",
+  "sha256_dataset": "e67a1edcd84483df5c471f0d6b9e13c2eeaa34c680af30eb1ec86c443d02ec76"
+}
