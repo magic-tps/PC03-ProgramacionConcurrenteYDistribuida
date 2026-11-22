@@ -1,0 +1,72 @@
+﻿{
+    "Timestamp":  "2026-11-21T21:23:15",
+    "Health":  {
+                   "nodes":  [
+                                 {
+                                     "id":  "ml-node-2",
+                                     "address":  "127.0.0.1:55577",
+                                     "lastSeen":  "2026-11-21T21:21:15.7067635-05:00"
+                                 },
+                                 {
+                                     "id":  "ml-node-1",
+                                     "address":  "127.0.0.1:55578",
+                                     "lastSeen":  "2026-11-21T21:21:15.7067635-05:00"
+                                 },
+                                 {
+                                     "id":  "ml-node-3",
+                                     "address":  "127.0.0.1:55580",
+                                     "lastSeen":  "2026-11-21T21:21:15.7067635-05:00"
+                                 }
+                             ],
+                   "status":  "ok",
+                   "storage":  {
+                                   "mongo":  "disconnected",
+                                   "redis":  "disconnected",
+                                   "mode":  "memory-fallback",
+                                   "predictionsPersisted":  1,
+                                   "jobsPersisted":  1
+                               }
+               },
+    "Train":  {
+                  "durationMs":  254.268,
+                  "jobId":  "job-1795314195378632000",
+                  "nodes":  3,
+                  "rows":  1936879,
+                  "status":  "completed"
+              },
+    "ColdMs":  11.196,
+    "WarmMs":  12.139,
+    "Average20Ms":  1.247,
+    "Min20Ms":  0.56,
+    "Max20Ms":  11.482,
+    "ColdResponse":  {
+                         "probabilities":  [
+                                               0.16220928038429908,
+                                               0.19461606806408602,
+                                               0.22702285574387293,
+                                               0.14119622676092383,
+                                               0.1212743906835156,
+                                               0.1536811783633025
+                                           ],
+                         "topClass":  "Robo",
+                         "topProbability":  0.22702285574387293,
+                         "latencyMs":  0,
+                         "fromCache":  true,
+                         "nodesUsed":  3
+                     },
+    "WarmResponse":  {
+                         "probabilities":  [
+                                               0.16220928038429908,
+                                               0.19461606806408602,
+                                               0.22702285574387293,
+                                               0.14119622676092383,
+                                               0.1212743906835156,
+                                               0.1536811783633025
+                                           ],
+                         "topClass":  "Robo",
+                         "topProbability":  0.22702285574387293,
+                         "latencyMs":  0.016,
+                         "fromCache":  true,
+                         "nodesUsed":  3
+                     }
+}

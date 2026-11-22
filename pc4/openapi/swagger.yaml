@@ -1,0 +1,61 @@
+openapi: 3.0.3
+info:
+  title: API PC4 - Denuncias Policiales
+  version: "1.0.0"
+  description: Coordinador HTTP y clúster TCP de nodos ML.
+servers:
+  - url: http://localhost:8080
+paths:
+  /api/v1/health:
+    get:
+      summary: Estado del coordinador
+      responses:
+        "200":
+          description: Estado y nodos registrados
+  /api/v1/train:
+    post:
+      summary: Entrena las particiones distribuidas
+      responses:
+        "202":
+          description: Entrenamiento completado por los nodos
+        "503":
+          description: Sin nodos ML disponibles
+  /api/v1/predict:
+    post:
+      summary: Predicción agregada de los nodos
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PredictionRequest"
+      responses:
+        "200":
+          description: Probabilidades por clase
+        "400":
+          description: Datos inválidos
+  /api/v1/metrics:
+    get:
+      summary: Métricas de nodos y almacenamiento
+      responses:
+        "200":
+          description: Métricas actuales
+components:
+  schemas:
+    PredictionRequest:
+      type: object
+      required: [district, franja]
+      properties:
+        district:
+          type: string
+          example: SAN JUAN DE LURIGANCHO
+        franja:
+          type: integer
+          minimum: 0
+          maximum: 3
+        mes:
+          type: integer
+          minimum: 1
+          maximum: 12
+        anio:
+          type: integer
