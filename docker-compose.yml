@@ -1,0 +1,58 @@
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
+  coordinator:
+    build: .
+    command: ["./coordinator", "-http=:8080", "-tcp=:9090", "-csv=/data/dataset.csv"]
+    environment:
+      MONGO_URI: mongodb://mongo:27017
+      MONGO_DB: pc4_denuncias
+      REDIS_ADDR: redis:6379
+    ports:
+      - "8080:8080"
+      - "9090:9090"
+    volumes:
+      - ./DATASET_Denuncias Policiales - Enero 2018 a Septiembre 2026.csv:/data/dataset.csv:ro
+      - ./pc4/openapi:/app/pc4/openapi:ro
+    depends_on:
+      - mongo
+      - redis
+
+  ml-node-1:
+    build: .
+    command: ["./node", "-id=ml-node-1", "-coordinator=coordinator:9090", "-csv=/data/dataset.csv"]
+    volumes:
+      - ./DATASET_Denuncias Policiales - Enero 2018 a Septiembre 2026.csv:/data/dataset.csv:ro
+    depends_on:
+      - coordinator
+
+  ml-node-2:
+    build: .
+    command: ["./node", "-id=ml-node-2", "-coordinator=coordinator:9090", "-csv=/data/dataset.csv"]
+    volumes:
+      - ./DATASET_Denuncias Policiales - Enero 2018 a Septiembre 2026.csv:/data/dataset.csv:ro
+    depends_on:
+      - coordinator
+
+  ml-node-3:
+    build: .
+    command: ["./node", "-id=ml-node-3", "-coordinator=coordinator:9090", "-csv=/data/dataset.csv"]
+    volumes:
+      - ./DATASET_Denuncias Policiales - Enero 2018 a Septiembre 2026.csv:/data/dataset.csv:ro
+    depends_on:
+      - coordinator
+
+volumes:
+  mongo-data:

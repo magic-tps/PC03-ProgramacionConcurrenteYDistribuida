@@ -1,0 +1,7 @@
+﻿NAME                       IMAGE                    COMMAND                  SERVICE       CREATED          STATUS                    PORTS
+pc4-grupo3-coordinator-1   pc4-grupo3-coordinator   "/app/coordinator"       coordinator   13 seconds ago   Up 6 seconds (healthy)    0.0.0.0:8080->8080/tcp, [::]:8080->8080/tcp
+pc4-grupo3-ml-node-1-1     pc4-grupo3-ml-node-1     "/app/node"              ml-node-1     13 seconds ago   Up Less than a second     8080/tcp, 9090/tcp
+pc4-grupo3-ml-node-2-1     pc4-grupo3-ml-node-2     "/app/node"              ml-node-2     13 seconds ago   Up Less than a second     8080/tcp, 9090/tcp
+pc4-grupo3-ml-node-3-1     pc4-grupo3-ml-node-3     "/app/node"              ml-node-3     13 seconds ago   Up Less than a second     8080/tcp, 9090/tcp
+pc4-grupo3-mongo-1         mongo:7                  "docker-entrypoint.s…"   mongo         13 seconds ago   Up 12 seconds (healthy)   0.0.0.0:27017->27017/tcp, [::]:27017->27017/tcp
+pc4-grupo3-redis-1         redis:7-alpine           "docker-entrypoint.s…"   redis         13 seconds ago   Up 12 seconds (healthy)   0.0.0.0:6379->6379/tcp, [::]:6379->6379/tcp

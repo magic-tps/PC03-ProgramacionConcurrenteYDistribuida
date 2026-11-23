@@ -1,0 +1,478 @@
+{
+  "info": {
+    "name": "PC4 · Grupo 3 · API Denuncias (Random Forest distribuido)",
+    "description": "Ejecutar en orden. Requiere el stack levantado con scripts/01_levantar.ps1. Cada consulta valida el código HTTP y el requisito de < 100 ms.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Flujo principal",
+      "item": [
+        {
+          "name": "Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "health"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Código HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Responde en menos de 100 ms\", function () { pm.expect(pm.response.responseTime).to.be.below(100); });",
+                  "const j = pm.response.json();",
+                  "pm.test(\"3 nodos ML conectados\", function () { pm.expect(j.nodesConnected).to.eql(3); });",
+                  "pm.test(\"MongoDB y Redis conectados\", function () { pm.expect(j.storage.mongo).to.eql(\"conectado\"); pm.expect(j.storage.redis).to.eql(\"conectado\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Entrenar (Random Forest distribuido)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/train",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "train"
+              ]
+            },
+            "description": "Tarda 1-3 s: cada nodo carga el CSV y entrena sus árboles en paralelo. No aplica el límite de 100 ms (no es una consulta de predicción).",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Código HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "const j = pm.response.json();",
+                  "pm.test(\"3 nodos y 32 árboles\", function () { pm.expect(j.nodeCount).to.eql(3); pm.expect(j.totalTrees).to.eql(32); });",
+                  "pm.test(\"Supera la línea base en 2026\", function () { pm.expect(j.evaluation.accuracy).to.be.above(j.evaluation.baselineAccuracy); });",
+                  "console.log(\"Exactitud\", j.evaluation.accuracy, \"línea base\", j.evaluation.baselineAccuracy);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Distritos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/districts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "districts"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Código HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Responde en menos de 100 ms\", function () { pm.expect(pm.response.responseTime).to.be.below(100); });",
+                  "pm.test(\"50 distritos\", function () { pm.expect(pm.response.json().count).to.eql(50); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Predecir (consulta al clúster)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/predict",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "predict"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"district\": \"SAN JUAN DE LURIGANCHO\",\n  \"franja\": 2,\n  \"mes\": 10,\n  \"anio\": 2026\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Código HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Responde en menos de 100 ms\", function () { pm.expect(pm.response.responseTime).to.be.below(100); });",
+                  "const j = pm.response.json();",
+                  "pm.test(\"6 probabilidades que suman 1\", function () { pm.expect(j.probabilities.length).to.eql(6); const s = j.probabilities.reduce((a, c) => a + c.probability, 0); pm.expect(s).to.be.closeTo(1, 0.001); });",
+                  "pm.test(\"Votan los 32 árboles\", function () { pm.expect(j.treesUsed).to.eql(32); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Predecir (misma consulta: sale de Redis)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/predict",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "predict"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"district\": \"SAN JUAN DE LURIGANCHO\",\n  \"franja\": 2,\n  \"mes\": 10,\n  \"anio\": 2026\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Código HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Responde en menos de 100 ms\", function () { pm.expect(pm.response.responseTime).to.be.below(100); });",
+                  "pm.test(\"fromCache = true\", function () { pm.expect(pm.response.json().fromCache).to.eql(true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Matriz de patrullaje",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/patrullaje?mes=10&anio=2026&top=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "patrullaje"
+              ],
+              "query": [
+                {
+                  "key": "mes",
+                  "value": "10"
+                },
+                {
+                  "key": "anio",
+                  "value": "2026"
+                },
+                {
+                  "key": "top",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Código HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Responde en menos de 100 ms\", function () { pm.expect(pm.response.responseTime).to.be.below(100); });",
+                  "const j = pm.response.json();",
+                  "pm.test(\"10 distritos con 4 franjas\", function () { pm.expect(j.rows.length).to.eql(10); pm.expect(j.rows[0].franjas.length).to.eql(4); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Métricas del clúster",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/metrics",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "metrics"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Código HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Responde en menos de 100 ms\", function () { pm.expect(pm.response.responseTime).to.be.below(100); });",
+                  "pm.test(\"Métricas de los 3 nodos\", function () { pm.expect(pm.response.json().nodes.length).to.eql(3); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2. Validaciones",
+      "item": [
+        {
+          "name": "Franja inválida (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/predict",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "predict"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"district\": \"MIRAFLORES\",\n  \"franja\": 7,\n  \"mes\": 10,\n  \"anio\": 2026\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Código HTTP 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"Responde en menos de 100 ms\", function () { pm.expect(pm.response.responseTime).to.be.below(100); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Distrito inexistente (404)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/predict",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "predict"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"district\": \"NARNIA\",\n  \"franja\": 1,\n  \"mes\": 10,\n  \"anio\": 2026\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Código HTTP 404\", function () { pm.response.to.have.status(404); });",
+                  "pm.test(\"Responde en menos de 100 ms\", function () { pm.expect(pm.response.responseTime).to.be.below(100); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Campo desconocido (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/predict",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "predict"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"district\": \"MIRAFLORES\",\n  \"franja\": 1,\n  \"mes\": 10,\n  \"anio\": 2026,\n  \"hora\": 15\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Código HTTP 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"Responde en menos de 100 ms\", function () { pm.expect(pm.response.responseTime).to.be.below(100); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Método no permitido (405)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/predict",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "predict"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Código HTTP 405\", function () { pm.response.to.have.status(405); });",
+                  "pm.test(\"Responde en menos de 100 ms\", function () { pm.expect(pm.response.responseTime).to.be.below(100); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+# El CSV es una copia del que está en la raíz del repositorio (01_levantar.ps1 lo copia si falta).
+data/*.csv
+# Material de trabajo que no aporta al repositorio
+informe/base/
+informe/entrega/
+docs/CAPTURAS.md

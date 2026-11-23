@@ -1,0 +1,59 @@
+﻿ml-node-1-1    | 2026/11/23 22:33:58.785115 nodo ml-node-1 iniciando; coordinador coordinator:9090; dataset /data/dataset.csv
+ml-node-1-1    | 2026/11/23 22:33:58.786512 [ml-node-1] registrado en coordinator:9090
+ml-node-1-1    | 2026/11/23 22:34:01.470428 [ml-node-1] entrenado v1: shard 1/3, 607779 denuncias, 11 árboles con 16 goroutines en 126.2 ms
+coordinator-1  | 2026/11/23 22:51:15.739427 GET /api/v1/health -> 200 (1.542 ms)
+ml-node-1-1    | 2026/11/23 22:43:38.358531 [ml-node-1] entrenado v2: shard 1/3, 607779 denuncias, 11 árboles con 16 goroutines en 141.3 ms
+coordinator-1  | 2026/11/23 22:51:20.804013 GET /api/v1/health -> 200 (1.485 ms)
+ml-node-2-1    | 2026/11/23 22:33:58.842945 nodo ml-node-2 iniciando; coordinador coordinator:9090; dataset /data/dataset.csv
+coordinator-1  | 2026/11/23 22:51:25.871864 GET /api/v1/health -> 200 (1.518 ms)
+ml-node-1-1    | 2026/11/23 22:47:50.253947 [ml-node-1] entrenado v3: shard 1/3, 607779 denuncias, 11 árboles con 16 goroutines en 130.1 ms
+ml-node-2-1    | 2026/11/23 22:33:58.844273 [ml-node-2] registrado en coordinator:9090
+coordinator-1  | 2026/11/23 22:51:30.140995 GET /api/v1/health -> 200 (1.872 ms)
+ml-node-2-1    | 2026/11/23 22:34:01.470963 [ml-node-2] entrenado v1: shard 2/3, 607778 denuncias, 11 árboles con 16 goroutines en 126.5 ms
+coordinator-1  | 2026/11/23 22:51:30.147550 POST /api/v1/predict -> 200 (1.451 ms)
+coordinator-1  | 2026/11/23 22:51:30.289696 nodo ml-node-2 desconectado
+ml-node-2-1    | 2026/11/23 22:43:38.369937 [ml-node-2] entrenado v2: shard 2/3, 607778 denuncias, 11 árboles con 16 goroutines en 150.9 ms
+coordinator-1  | 2026/11/23 22:51:30.460627 GET /api/v1/health -> 200 (1.534 ms)
+ml-node-2-1    | 2026/11/23 22:47:50.249383 [ml-node-2] entrenado v3: shard 2/3, 607778 denuncias, 11 árboles con 16 goroutines en 125.3 ms
+ml-node-2-1    | 2026/11/23 22:51:30.289632 nodo ml-node-2 detenido
+coordinator-1  | 2026/11/23 22:51:30.464740 POST /api/v1/predict -> 200 (0.966 ms)
+ml-node-2-1    | 2026/11/23 22:51:31.795516 nodo ml-node-2 iniciando; coordinador coordinator:9090; dataset /data/dataset.csv
+ml-node-2-1    | 2026/11/23 22:51:31.797175 [ml-node-2] registrado en coordinator:9090
+coordinator-1  | 2026/11/23 22:51:30.470844 GET /api/v1/health -> 200 (1.442 ms)
+ml-node-2-1    | 2026/11/23 22:51:32.172153 [ml-node-2] entrenado v3: shard 2/3, 607778 denuncias, 11 árboles con 16 goroutines en 50.6 ms
+coordinator-1  | 2026/11/23 22:51:30.924752 GET /api/v1/health -> 200 (1.444 ms)
+coordinator-1  | 2026/11/23 22:51:31.797227 nodo ml-node-2 registrado desde 172.18.0.6:41400
+coordinator-1  | 2026/11/23 22:51:31.797275 reentrenando ml-node-2 (versión 3, shard 2/3, 11 árboles)
+coordinator-1  | 2026/11/23 22:51:31.815407 GET /api/v1/health -> 200 (1.635 ms)
+coordinator-1  | 2026/11/23 22:51:32.172430 ml-node-2 listo de nuevo con la versión 3
+coordinator-1  | 2026/11/23 22:51:33.841321 GET /api/v1/health -> 200 (2.083 ms)
+coordinator-1  | 2026/11/23 22:51:33.849384 POST /api/v1/predict -> 200 (1.531 ms)
+coordinator-1  | 2026/11/23 22:51:35.984160 GET /api/v1/health -> 200 (1.562 ms)
+coordinator-1  | 2026/11/23 22:51:41.039211 GET /api/v1/health -> 200 (1.611 ms)
+coordinator-1  | 2026/11/23 22:51:46.104488 GET /api/v1/health -> 200 (1.458 ms)
+coordinator-1  | 2026/11/23 22:51:51.167525 GET /api/v1/health -> 200 (1.575 ms)
+coordinator-1  | 2026/11/23 22:51:56.229678 GET /api/v1/health -> 200 (1.505 ms)
+coordinator-1  | 2026/11/23 22:52:01.277528 GET /api/v1/health -> 200 (1.714 ms)
+coordinator-1  | 2026/11/23 22:52:06.328778 GET /api/v1/health -> 200 (1.446 ms)
+coordinator-1  | 2026/11/23 22:52:11.403368 GET /api/v1/health -> 200 (1.608 ms)
+coordinator-1  | 2026/11/23 22:52:16.468541 GET /api/v1/health -> 200 (1.618 ms)
+coordinator-1  | 2026/11/23 22:52:21.516178 GET /api/v1/health -> 200 (1.603 ms)
+coordinator-1  | 2026/11/23 22:52:26.580945 GET /api/v1/health -> 200 (1.441 ms)
+coordinator-1  | 2026/11/23 22:52:31.637339 GET /api/v1/health -> 200 (1.520 ms)
+coordinator-1  | 2026/11/23 22:52:36.688140 GET /api/v1/health -> 200 (1.523 ms)
+coordinator-1  | 2026/11/23 22:52:41.752495 GET /api/v1/health -> 200 (1.532 ms)
+coordinator-1  | 2026/11/23 22:52:46.815726 GET /api/v1/health -> 200 (1.484 ms)
+coordinator-1  | 2026/11/23 22:52:51.867316 GET /api/v1/health -> 200 (1.590 ms)
+coordinator-1  | 2026/11/23 22:52:56.943481 GET /api/v1/health -> 200 (1.583 ms)
+coordinator-1  | 2026/11/23 22:53:02.012036 GET /api/v1/health -> 200 (1.459 ms)
+coordinator-1  | 2026/11/23 22:53:07.075166 GET /api/v1/health -> 200 (1.500 ms)
+coordinator-1  | 2026/11/23 22:53:12.140176 GET /api/v1/health -> 200 (1.548 ms)
+coordinator-1  | 2026/11/23 22:53:17.187729 GET /api/v1/health -> 200 (1.558 ms)
+coordinator-1  | 2026/11/23 22:53:22.252159 GET /api/v1/health -> 200 (1.581 ms)
+coordinator-1  | 2026/11/23 22:53:27.304403 GET /api/v1/health -> 200 (1.483 ms)
+coordinator-1  | 2026/11/23 22:53:32.357045 GET /api/v1/health -> 200 (1.779 ms)
+ml-node-3-1    | 2026/11/23 22:33:58.851214 nodo ml-node-3 iniciando; coordinador coordinator:9090; dataset /data/dataset.csv
+ml-node-3-1    | 2026/11/23 22:33:58.852747 [ml-node-3] registrado en coordinator:9090
+ml-node-3-1    | 2026/11/23 22:34:01.461942 [ml-node-3] entrenado v1: shard 3/3, 607778 denuncias, 10 árboles con 16 goroutines en 110.5 ms
+ml-node-3-1    | 2026/11/23 22:43:38.371036 [ml-node-3] entrenado v2: shard 3/3, 607778 denuncias, 10 árboles con 16 goroutines en 150.4 ms
+ml-node-3-1    | 2026/11/23 22:47:50.253361 [ml-node-3] entrenado v3: shard 3/3, 607778 denuncias, 10 árboles con 16 goroutines en 129.3 ms

@@ -33,6 +33,33 @@ go run main.go -workers=4 -v=false -reps=1
 Las franjas horarias son simuladas porque el CSV no contiene la hora del hecho.
 Los resultados describen un prototipo local; no validan su uso operativo.
 
+## Entregable 2 — Clúster, API y persistencia
+
+La solución PC4 agrega un coordinador HTTP/TCP y tres nodos ML:
+
+- API REST en `:8080`, documentación Swagger en `/swagger`.
+- Coordinador TCP en `:9090`.
+- Tres servicios `ml-node-*` que reciben tareas por canales Go y JSON sobre TCP.
+- Cada nodo ML entrena 6 árboles CART con una muestra bootstrap de su partición.
+- El coordinador agrega las 18 predicciones parciales como voto suave del bosque distribuido.
+- MongoDB como persistencia y Redis como caché.
+- Docker Compose para levantar MongoDB, Redis, API y los tres nodos.
+
+Ejecutar el entorno distribuido:
+
+```powershell
+docker compose up --build
+```
+
+Sin Docker Desktop, la misma API puede ejecutarse localmente con memoria temporal:
+
+```powershell
+go run ./pc4/cmd/coordinator -http=:8080 -tcp=:9090
+go run ./pc4/cmd/node -id=ml-node-1 -coordinator=127.0.0.1:9090
+go run ./pc4/cmd/node -id=ml-node-2 -coordinator=127.0.0.1:9090
+go run ./pc4/cmd/node -id=ml-node-3 -coordinator=127.0.0.1:9090
+```
+
 ## Kanban
 
 El [tablero Kanban PC03](https://github.com/users/magic-tps/projects/2) está

@@ -1,0 +1,10 @@
+data/
+evidencias/
+informe/
+docs/
+postman/
+scripts/
+*.docx
+*.pdf
+*.md
+.git

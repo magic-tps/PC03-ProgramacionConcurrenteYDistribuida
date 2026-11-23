@@ -1,0 +1,82 @@
+﻿{
+    "fecha":  "2026-11-23T17:51:30",
+    "con_3_nodos":  {
+                        "status":  200,
+                        "nodesUsed":  3,
+                        "treesUsed":  32,
+                        "fromCache":  false,
+                        "topClass":  "Hurto",
+                        "clientMs":  2.276
+                    },
+    "con_2_nodos":  {
+                        "status":  200,
+                        "nodesUsed":  2,
+                        "treesUsed":  21,
+                        "fromCache":  false,
+                        "topClass":  "Hurto",
+                        "clientMs":  1.558
+                    },
+    "health_con_2_nodos":  {
+                               "status":  "degradado",
+                               "time":  "2026-11-23T22:51:30.46940681Z",
+                               "uptimeS":  1057.146502517,
+                               "nodesExpected":  3,
+                               "nodesConnected":  2,
+                               "nodes":  [
+                                             "ml-node-1",
+                                             "ml-node-3"
+                                         ],
+                               "model":  {
+                                             "trained":  true,
+                                             "version":  3,
+                                             "trainedAt":  "2026-11-23T22:47:50.254160909Z",
+                                             "totalTrees":  32,
+                                             "nodesReady":  [
+                                                                "ml-node-1",
+                                                                "ml-node-2",
+                                                                "ml-node-3"
+                                                            ],
+                                             "accuracy":  0.5133752686927981,
+                                             "config":  {
+                                                            "maxDepth":  12,
+                                                            "minLeaf":  50,
+                                                            "mtry":  3,
+                                                            "sampleFrac":  0.3,
+                                                            "seed":  42
+                                                        }
+                                         },
+                               "storage":  {
+                                               "mode":  "MongoDB + Redis",
+                                               "mongo":  "conectado",
+                                               "redis":  "conectado",
+                                               "database":  "pc4_denuncias",
+                                               "collections":  {
+                                                                   "cluster_metrics":  35,
+                                                                   "patrol_recommendations":  3,
+                                                                   "predictions":  48,
+                                                                   "training_jobs":  3
+                                                               },
+                                               "cacheKeys":  8
+                                           }
+                           },
+    "segundos_hasta_recuperar":  3.4,
+    "con_3_nodos_recuperado":  {
+                                   "status":  200,
+                                   "nodesUsed":  3,
+                                   "treesUsed":  32,
+                                   "fromCache":  false,
+                                   "topClass":  "Hurto",
+                                   "clientMs":  2.427
+                               },
+    "logs":  [
+                 "ml-node-2-1    | 2026/11/23 22:47:50.249383 [ml-node-2] entrenado v3: shard 2/3, 607778 denuncias, 11 árboles con 16 goroutines en 125.3 ms",
+                 "ml-node-2-1    | 2026/11/23 22:51:30.289632 nodo ml-node-2 detenido",
+                 "ml-node-2-1    | 2026/11/23 22:51:31.795516 nodo ml-node-2 iniciando; coordinador coordinator:9090; dataset /data/dataset.csv",
+                 "ml-node-2-1    | 2026/11/23 22:51:31.797175 [ml-node-2] registrado en coordinator:9090",
+                 "ml-node-2-1    | 2026/11/23 22:51:32.172153 [ml-node-2] entrenado v3: shard 2/3, 607778 denuncias, 11 árboles con 16 goroutines en 50.6 ms",
+                 "coordinator-1  | 2026/11/23 22:51:30.289696 nodo ml-node-2 desconectado",
+                 "coordinator-1  | 2026/11/23 22:51:31.797227 nodo ml-node-2 registrado desde 172.18.0.6:41400",
+                 "coordinator-1  | 2026/11/23 22:51:31.797275 reentrenando ml-node-2 (versión 3, shard 2/3, 11 árboles)",
+                 "coordinator-1  | 2026/11/23 22:51:32.172430 ml-node-2 listo de nuevo con la versión 3"
+             ]
+}

@@ -1,0 +1,9 @@
+﻿ml-node-2-1    | 2026/11/23 22:47:50.249383 [ml-node-2] entrenado v3: shard 2/3, 607778 denuncias, 11 árboles con 16 goroutines en 125.3 ms
+ml-node-2-1    | 2026/11/23 22:51:30.289632 nodo ml-node-2 detenido
+ml-node-2-1    | 2026/11/23 22:51:31.795516 nodo ml-node-2 iniciando; coordinador coordinator:9090; dataset /data/dataset.csv
+ml-node-2-1    | 2026/11/23 22:51:31.797175 [ml-node-2] registrado en coordinator:9090
+ml-node-2-1    | 2026/11/23 22:51:32.172153 [ml-node-2] entrenado v3: shard 2/3, 607778 denuncias, 11 árboles con 16 goroutines en 50.6 ms
+coordinator-1  | 2026/11/23 22:51:30.289696 nodo ml-node-2 desconectado
+coordinator-1  | 2026/11/23 22:51:31.797227 nodo ml-node-2 registrado desde 172.18.0.6:41400
+coordinator-1  | 2026/11/23 22:51:31.797275 reentrenando ml-node-2 (versión 3, shard 2/3, 11 árboles)
+coordinator-1  | 2026/11/23 22:51:32.172430 ml-node-2 listo de nuevo con la versión 3
